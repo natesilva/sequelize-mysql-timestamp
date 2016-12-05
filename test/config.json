@@ -7,6 +7,9 @@
     "dialect": "mysql",
     "username": "travis",
     "password": "",
-    "database": "myapp_test"
+    "database": "myapp_test",
+    "dialectOptions": {
+      "socketPath": "/var/run/mysqld/mysqld.sock"
+    }
   }
 }

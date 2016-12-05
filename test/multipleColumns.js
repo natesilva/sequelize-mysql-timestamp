@@ -14,7 +14,7 @@ const moment = require('moment-timezone');
 const co = require('co');
 const should = require('should');                     // eslint-disable-line
 
-describe.only('multiple IMESTAMP columns on a table', function () {
+describe('multiple IMESTAMP columns on a table', function () {
   const sequelize = new Sequelize(config.db);
 
   const Model = sequelize.define('Model', {

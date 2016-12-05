@@ -14,7 +14,7 @@ Currently the main reason to use `TIMESTAMP` is to support legacy DB schemas whe
 
 ## Usage
 
-```
+```javascript
 const mysqlTimestamp = require('sequelize-mysql-timestamp');
 
 const User = sequelize.define('User', {

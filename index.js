@@ -11,6 +11,14 @@ const sequelizeErrors = require('sequelize/lib/errors');
 const moment = require('moment-timezone');
 const Validator = require('validator');
 
+// internal date validation function
+function _validate(value) {
+  if (!Validator.isDate(String(value)) || !moment(String(value)).isValid()) {
+    return false;
+  }
+  return true;
+}
+
 class TIMESTAMP extends BaseTypes.ABSTRACT {
   constructor(length) {
     super(length);
@@ -32,22 +40,22 @@ class TIMESTAMP extends BaseTypes.ABSTRACT {
     return 'TIMESTAMP NULL';
   }
 
-  validate(value) {
-    if (!Validator.isDate(String(value)) || !moment(String(value)).isValid()) {
+  static validate(value) {
+    if (!_validate(value)) {
       const errMessage = util.format('%j is not a valid date', value);
       throw new sequelizeErrors.ValidationError(errMessage);
     }
     return true;
   }
 
+  validate(value) { return TIMESTAMP.validate(value); }
+
   _stringify(date, options) {
     if (typeof date === 'string' || date instanceof String) {
-      try {
-        return this._stringify(moment(date), options);
-      } catch (e) {
-        return 'invalid date';
-      }
+      if (_validate(date)) { return this._stringify(moment(date), options); }
     }
+
+    if (!moment.isMoment(date) || !date.isValid()) { return 'invalid date'; }
 
     if (moment.tz.zone(options.timezone)) {
       if (this._length) {
@@ -73,18 +81,15 @@ class TIMESTAMP extends BaseTypes.ABSTRACT {
   static parse(value, options) {
     const strValue = value.string();
     if (strValue === null) { return strValue; }
+    if (!_validate(strValue)) { return 'invalid date'; }
 
     let result;
     if (moment.tz.zone(options.timezone)) {
       // moment knows about the TZ
-      try {
-        result = moment.tz(strValue, options.timezone).toDate();
-      } catch (e) {
-        result = 'invalid date';
-      }
+      result = moment.tz(strValue, options.timezone).toDate();
     } else {
       // options timezone is not known by moment; treat it as a UTC offset
-      const dateStr = `${strValue} ${options.timezone}`;
+      const dateStr = `${strValue}${options.timezone}`;
       result = new Date(dateStr);
     }
 

@@ -1,4 +1,4 @@
-/* global describe, it, before, beforeEach, afterEach */
+/* global describe, it, beforeEach, afterEach */
 
 'use strict';
 

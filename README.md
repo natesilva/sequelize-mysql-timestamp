@@ -19,7 +19,7 @@ const mysqlTimestamp = require('sequelize-mysql-timestamp');
 
 const User = sequelize.define('User', {
   username: Sequelize.STRING,
-  birthday: mysqlTimestamp.TIMESTAMP
+  hire_date: mysqlTimestamp.TIMESTAMP
 });
 ```
 

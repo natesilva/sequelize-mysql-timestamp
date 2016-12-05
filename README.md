@@ -1,5 +1,7 @@
 # sequelize-mysql-timestamp
 
+`npm install sequelize-mysql-timestamp`
+
 ## What this is, and what it is not
 
 This adds support to Sequelize for MySQL’s `TIMESTAMP` data type. Specifically, it allows you to use `TIMESTAMP` for basic storage of an absolute date/time.
@@ -13,8 +15,6 @@ MySQL has two data types for dates and times: `TIMESTAMP` and `DATETIME`. There 
 Currently the main reason to use `TIMESTAMP` is to support legacy DB schemas where it was used instead of `DATETIME`.
 
 ## Usage
-
-Install: `npm install sequelize-mysql-timestamp`
 
 ```javascript
 const mysqlTimestamp = require('sequelize-mysql-timestamp');

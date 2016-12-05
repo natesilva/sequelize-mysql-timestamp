@@ -2,7 +2,11 @@
 
 'use strict';
 
+const fs = require('fs');
 const config = require('./config.json');
+if (fs.existsSync(`${__dirname}/config.local.json`)) {
+  Object.assign(config, require('./config.local.json'));
+}
 const Sequelize = require('sequelize');
 const uuidV4 = require('uuid/v4');
 const mysqlTimestamp = require('../index.js');

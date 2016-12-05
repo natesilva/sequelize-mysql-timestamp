@@ -10,9 +10,9 @@ It works with Sequelize 3.x and pre-release version 4.x.
 
 ## Why use it
 
-MySQL has two data types for dates and times: `TIMESTAMP` and `DATETIME`. There are tradeoffs with either type; see below.
+MySQL has two data types for dates and times: `TIMESTAMP` and `DATETIME`. There are tradeoffs with either type; see below. Sequelize has built-in support for `DATETIME` but limited support for `TIMESTAMP`.
 
-Currently the main reason to use `TIMESTAMP` is to support legacy DB schemas where it was used instead of `DATETIME`.
+Currently the main reason to use `TIMESTAMP` is to support legacy DB schemas.
 
 ## Usage
 

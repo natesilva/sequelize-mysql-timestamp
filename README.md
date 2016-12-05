@@ -6,6 +6,8 @@ This adds support to Sequelize for MySQL’s `TIMESTAMP` data type. Specifically
 
 It **does not** support a common use case where `TIMESTAMP` columns are automatically updated to keep track of row creation and update times. If you need that functionality, use the Sequelize `createdAt`/`updatedAt` columns.
 
+It works with Sequelize 3.x and pre-release version 4.x.
+
 ## Why use it
 
 MySQL has two data types for dates and times: `TIMESTAMP` and `DATETIME`. There are tradeoffs with either type; see below.
@@ -41,4 +43,4 @@ To run the unit tests, copy `test/config.example.json` to `test/config.json` and
 
 During the tests, several tables are created. These have names starting with `_test_timestamp_` followed by a UUID, so they will not conflict with existing tables. These tables are `DROP`ped after the tests.
 
-The tests use Sequelize 3.x. To use Sequelize 4.x, you can do `npm uninstall --save-dev sequelize && npm install --save-dev sequelize@unstable mysql2` before running the test. To switch back to Sequelize 3.x, do `npm uninstall --save-dev sequelize && npm install --save-dev sequelize`.
+The tests use Sequelize 3.x. To test against Sequelize 4.x, you can do `npm uninstall --save-dev sequelize && npm install --save-dev sequelize@unstable mysql2` before running the test. To switch back to Sequelize 3.x, do `npm uninstall --save-dev sequelize && npm install --save-dev sequelize`.

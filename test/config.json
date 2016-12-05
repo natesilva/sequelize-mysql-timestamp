@@ -7,6 +7,7 @@
     "dialect": "mysql",
     "host": "localhost",
     "username": "travis",
+    "password": "",
     "database": "myapp_test"
   }
 }

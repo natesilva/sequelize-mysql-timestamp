@@ -1,5 +1,8 @@
 # sequelize-mysql-timestamp
 
+[![Build Status](https://travis-ci.org/natesilva/sequelize-mysql-timestamp.svg?branch=master)](https://travis-ci.org/natesilva/sequelize-mysql-timestamp
+)
+
 `npm install sequelize-mysql-timestamp`
 
 This adds support to Sequelize for MySQL’s `TIMESTAMP` data type. Specifically, it allows you to use `TIMESTAMP` for basic storage of an absolute date/time.

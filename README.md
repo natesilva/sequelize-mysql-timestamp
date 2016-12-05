@@ -33,7 +33,7 @@ By contrast, `DATETIME` is stored without any timezone. It can represent any dat
 
 You can choose `TIMESTAMP`, which represents a specific time regardless of local timezone settings, but only a limited range of dates. Or you can choose `DATETIME`, which represents a wide range of dates, but requires all your programmers and applications to consistently convert to/from an agreed-upon timezone.
 
-The SQL standard defines a data type, `TIMESTAMP WITH TIME ZONE`, that supports a wide range of dates, and because it has an explicit timezone, represents a non-ambiguous moment in time. This is widely supported in other database engines: PostgreSQL and Oracle support `TIMESTAMP WITH TIME ZONE`; Microsoft SQL Server has a similar `DATETIMEOFFSET`. Unfortunately MySQL doesn’t support anything like it. `TIMESTAMP` and `DATETIME`, with their respective limitations, are your only options.
+The SQL standard defines a data type, `TIMESTAMP WITH TIME ZONE`, that supports a wide range of dates, and because it has an explicit timezone, represents a non-ambiguous moment in time. This is widely supported in other database engines: PostgreSQL and Oracle support `TIMESTAMP WITH TIME ZONE`; Microsoft SQL Server has a similar `DATETIMEOFFSET`. Unfortunately MySQL doesn’t have anything like it. `TIMESTAMP` and `DATETIME`, with their respective limitations, are your only options.
 
 ## Tests
 

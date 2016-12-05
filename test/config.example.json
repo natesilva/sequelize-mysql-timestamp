@@ -1,0 +1,13 @@
+{
+  "description": "Database configuration for unit tests",
+  "instructions": "Copy this to config.json and fill in credentials",
+
+  "db": {
+    "logging": false,
+    "dialect": "mysql",
+    "host": "<MYSQL HOST NAME>",
+    "username": "<MYSQL USER NAME>",
+    "password": "<MYSQL PASSWORD>",
+    "database": "<MYSQL DB NAME>"
+  }
+}

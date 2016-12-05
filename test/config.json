@@ -5,6 +5,7 @@
   "db": {
     "logging": false,
     "dialect": "mysql",
+    "socketPath": "~travis/.my.cnf",
     "host": "localhost",
     "username": "travis",
     "password": "",

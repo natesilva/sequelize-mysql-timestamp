@@ -12,5 +12,5 @@ services:
 
 before_install:
   - mysql -e 'CREATE DATABASE myapp_test;'
-  - mysql -e 'CREATE USER testuser@\'%\';'
-  - mysql -e 'GRANT ALL PRIVILEGES ON *.* TO testuser@\'%\''
+  - mysql -e "CREATE USER 'testuser'@'%';"
+  - mysql -e "GRANT ALL PRIVILEGES ON *.* TO 'testuser'@'%'"

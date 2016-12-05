@@ -5,11 +5,9 @@
   "db": {
     "logging": false,
     "dialect": "mysql",
-    "username": "travis",
+    "host": "127.0.0.1",
+    "username": "testuser",
     "password": "",
-    "database": "myapp_test",
-    "dialectOptions": {
-      "socketPath": "/var/run/mysqld/mysqld.sock"
-    }
+    "database": "myapp_test"
   }
 }

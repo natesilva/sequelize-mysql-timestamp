@@ -7,8 +7,6 @@
 
 This adds support to Sequelize for MySQL’s `TIMESTAMP` data type. Specifically, it allows you to use `TIMESTAMP` for basic storage of an absolute date/time.
 
-It **does not** support a common use case where `TIMESTAMP` columns are automatically updated to keep track of row creation and update times. If you need that functionality, use the Sequelize `createdAt`/`updatedAt` columns.
-
 It works with Sequelize 3.x and pre-release version 4.x.
 
 ## Why use it

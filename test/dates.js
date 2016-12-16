@@ -9,17 +9,17 @@ if (fs.existsSync(`${__dirname}/config.local.json`)) {
 }
 const Sequelize = require('sequelize');
 const uuidV4 = require('uuid/v4');
-const mysqlTimestamp = require('../index.js');
 const moment = require('moment-timezone');
 const co = require('co');
 const should = require('should');                     // eslint-disable-line
 
 describe('TIMESTAMP column with Sequelize timezone as +00:00 and UTC dates', function () {
   const sequelize = new Sequelize(config.db);
+  const TIMESTAMP = require('../index.js')(sequelize);
 
   const Model = sequelize.define('Model', {
     username: Sequelize.STRING,
-    hire_date: mysqlTimestamp.TIMESTAMP
+    hire_date: TIMESTAMP
   }, {
     tableName: `_test_timestamp_${uuidV4()}`,          // unique table name
     timestamps: false
@@ -65,10 +65,11 @@ describe('TIMESTAMP column with Sequelize timezone as +00:00 and UTC dates', fun
 
 describe('TIMESTAMP column with Sequelize timezone as +00:00 and non-UTC TZ', function () {
   const sequelize = new Sequelize(config.db);
+  const TIMESTAMP = require('../index.js')(sequelize);
 
   const Model = sequelize.define('Model', {
     username: Sequelize.STRING,
-    hire_date: mysqlTimestamp.TIMESTAMP
+    hire_date: TIMESTAMP
   }, {
     tableName: `_test_timestamp_${uuidV4()}`,           // unique table name
     timestamps: false
@@ -117,10 +118,11 @@ describe('TIMESTAMP column with Sequelize timezone as +08:00 and non-UTC TZ', fu
   let testConfig = {};
   Object.assign(testConfig, config.db, { timezone: '+08:00' });
   const sequelize = new Sequelize(testConfig);
+  const TIMESTAMP = require('../index.js')(sequelize);
 
   const Model = sequelize.define('Model', {
     username: Sequelize.STRING,
-    hire_date: mysqlTimestamp.TIMESTAMP
+    hire_date: TIMESTAMP
   }, {
     tableName: `_test_timestamp_${uuidV4()}`,           // unique table name
     timestamps: false
@@ -168,10 +170,11 @@ describe('TIMESTAMP column with Sequelize typeValidation set to true', function(
   let testConfig = {};
   Object.assign(testConfig, config.db, { typeValidation: true });
   const sequelize = new Sequelize(testConfig);
+  const TIMESTAMP = require('../index.js')(sequelize);
 
   const Model = sequelize.define('Model', {
     username: Sequelize.STRING,
-    hire_date: mysqlTimestamp.TIMESTAMP
+    hire_date: TIMESTAMP
   }, {
     tableName: `_test_timestamp_${uuidV4()}`,           // unique table name
     timestamps: false
@@ -190,6 +193,16 @@ describe('TIMESTAMP column with Sequelize typeValidation set to true', function(
       .should.be.fulfilled();
   });
 
+  it('should accept a valid Date object', function() {
+    const d = new Date('2016-01-02T03:04:05Z');
+    return Model.create({username: 'janedoe', hire_date: d}).should.be.fulfilled();
+  });
+
+  it('should accept a valid moment object', function() {
+    const m = moment('2013-02-08 09:30:26.123+07:00');
+    return Model.create({username: 'janedoe', hire_date: m}).should.be.fulfilled();
+  });
+
   it('should reject a bogus date', function() {
     return Model.create({username: 'janedoe', hire_date: '2016-02-31T03:04:05Z'})
       .should.be.rejectedWith({name: 'SequelizeValidationError'});
@@ -205,10 +218,11 @@ describe('TIMESTAMP column with Sequelize named timezone', function () {
   let testConfig = {};
   Object.assign(testConfig, config.db, { timezone: 'Australia/Perth' });
   const sequelize = new Sequelize(testConfig);
+  const TIMESTAMP = require('../index.js')(sequelize);
 
   const Model = sequelize.define('Model', {
     username: Sequelize.STRING,
-    hire_date: mysqlTimestamp.TIMESTAMP
+    hire_date: TIMESTAMP
   }, {
     tableName: `_test_timestamp_${uuidV4()}`,           // unique table name
     timestamps: false

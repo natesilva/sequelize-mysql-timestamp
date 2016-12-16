@@ -9,18 +9,18 @@ if (fs.existsSync(`${__dirname}/config.local.json`)) {
 }
 const Sequelize = require('sequelize');
 const uuidV4 = require('uuid/v4');
-const mysqlTimestamp = require('../index.js');
 const moment = require('moment-timezone');
 const co = require('co');
 const should = require('should');                     // eslint-disable-line
 
-describe('multiple IMESTAMP columns on a table', function () {
+describe('multiple TIMESTAMP columns on a table', function () {
   const sequelize = new Sequelize(config.db);
+  const TIMESTAMP = require('../index.js')(sequelize);
 
   const Model = sequelize.define('Model', {
     username: Sequelize.STRING,
-    hire_date: mysqlTimestamp.TIMESTAMP,
-    last_review: mysqlTimestamp.TIMESTAMP
+    hire_date: TIMESTAMP,
+    last_review: TIMESTAMP
   }, {
     tableName: `_test_timestamp_${uuidV4()}`,          // unique table name
     timestamps: false

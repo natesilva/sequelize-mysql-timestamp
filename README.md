@@ -20,11 +20,17 @@ Currently the main reason to use `TIMESTAMP` is to support legacy DB schemas.
 **Install:** `npm install sequelize-mysql-timestamp`
 
 ```javascript
-const mysqlTimestamp = require('sequelize-mysql-timestamp');
+const Sequelize = require('sequelize');
+
+// create your connection
+const sequelize = new Sequelize(…);
+
+// now add the TIMESTAMP type
+const TIMESTAMP = require('sequelize-mysql-timestamp')(sequelize);
 
 const User = sequelize.define('User', {
   username: Sequelize.STRING,
-  hire_date: mysqlTimestamp.TIMESTAMP
+  hire_date: TIMESTAMP
 });
 ```
 

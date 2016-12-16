@@ -2,7 +2,7 @@
 
 'use strict';
 
-const TIMESTAMP = require('../index.js').TIMESTAMP;
+const TIMESTAMP = require('../index.js')();
 const should = require('should');                     // eslint-disable-line
 const moment = require('moment-timezone');
 
@@ -24,16 +24,12 @@ describe('TIMESTAMP parsing', function() {
     const value = {string: () => { return moment(d).tz(tz).format('YYYY-MM-DDTHH:mm:ss'); }};
 
     TIMESTAMP.parse(value, options).getTime().should.equal(d.valueOf());
-    const ts = new TIMESTAMP;
-    ts.parse(value, options).getTime().should.equal(d.valueOf());
   });
 
   it('should handle invalid dates with a UTC offset timezone', function() {
     const options = { timezone: '+00:00' };
     const value = {string: () => { return '2016-02-31T03:04:05'; }};
     TIMESTAMP.parse(value, options).should.equal('invalid date');
-    const ts = new TIMESTAMP;
-    ts.parse(value, options).should.equal('invalid date');
   });
 
   it('should handle invalid dates with a known timezone', function() {
@@ -41,8 +37,28 @@ describe('TIMESTAMP parsing', function() {
     const options = { timezone: tz };
     const value = {string: () => { return '2016-02-31T03:04:05'; }};
     TIMESTAMP.parse(value, options).should.equal('invalid date');
+  });
+
+  it('should stringify Date objects', function() {
+    const value = new Date();
+    const options = { timezone: '+00:00' };
     const ts = new TIMESTAMP;
-    ts.parse(value, options).should.equal('invalid date');
+    const expected = moment(value).utc().format('YYYY-MM-DD HH:mm:ss');
+    ts.stringify(value, options).should.equal(expected);
+  });
+
+  it('should handle epoch integer values', function() {
+    const tz = 'America/Chicago';
+    const options = { timezone: tz };
+    const ts = new TIMESTAMP;
+    let ivalue = 42;
+    let dvalue = new Date(ivalue);
+    ts.stringify(ivalue, options).should.equal(ts.stringify(dvalue, options));
+
+    ivalue = 1481850549000;
+    dvalue = new Date(ivalue);
+    dvalue.toISOString().should.equal('2016-12-16T01:09:09.000Z');
+    ts.stringify(ivalue, options).should.equal(ts.stringify(dvalue, options));
   });
 
   it('should not stringify invalid values from the db', function() {
@@ -50,8 +66,6 @@ describe('TIMESTAMP parsing', function() {
     const options = { timezone: tz };
     const ts = new TIMESTAMP;
     let value = '2016-02-31T03:04:05';
-    ts.stringify(value, options).should.equal('invalid date');
-    value = 42;
     ts.stringify(value, options).should.equal('invalid date');
     value = {};
     ts.stringify(value, options).should.equal('invalid date');

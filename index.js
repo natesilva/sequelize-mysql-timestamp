@@ -23,7 +23,7 @@ function inherits(constructor, superConstructor) {
 
 // internal date validation function
 function _validate(value) {
-  if (!Validator.isDate(String(value))) { return false; }
+  if (!Validator.toDate(String(value))) { return false; }
   if (value instanceof Date) { return moment(value).isValid(); }
   if (moment.isMoment(value)) { return moment(value).isValid(); }
   if (!moment(String(value)).isValid()) { return false; }

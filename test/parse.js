@@ -47,16 +47,4 @@ describe('TIMESTAMP parsing', function() {
     dvalue.toISOString().should.equal('2016-12-16T01:09:09.000Z');
     ts.stringify(ivalue, options).should.equal(ts.stringify(dvalue, options));
   });
-
-  it('should not stringify invalid values from the db', function() {
-    const tz = 'America/Chicago';
-    const options = { timezone: tz };
-    const ts = new TIMESTAMP;
-    let value = '2016-02-31T03:04:05';
-    ts.stringify(value, options).should.equal('invalid date');
-    value = {};
-    ts.stringify(value, options).should.equal('invalid date');
-    value = 'not a date';
-    ts.stringify(value, options).should.equal('invalid date');
-  });
 });

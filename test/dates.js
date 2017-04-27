@@ -203,11 +203,6 @@ describe('TIMESTAMP column with Sequelize typeValidation set to true', function(
     return Model.create({username: 'janedoe', hire_date: m}).should.be.fulfilled();
   });
 
-  it('should reject a bogus date', function() {
-    return Model.create({username: 'janedoe', hire_date: '2016-02-31T03:04:05Z'})
-      .should.be.rejectedWith({name: 'SequelizeValidationError'});
-  });
-
   it('should reject non-date data', function() {
     return Model.create({username: 'janedoe', hire_date: 'Not a date'})
       .should.be.rejectedWith({name: 'SequelizeValidationError'});

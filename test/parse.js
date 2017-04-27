@@ -26,19 +26,6 @@ describe('TIMESTAMP parsing', function() {
     TIMESTAMP.parse(value, options).getTime().should.equal(d.valueOf());
   });
 
-  it('should handle invalid dates with a UTC offset timezone', function() {
-    const options = { timezone: '+00:00' };
-    const value = {string: () => { return '2016-02-31T03:04:05'; }};
-    TIMESTAMP.parse(value, options).should.equal('invalid date');
-  });
-
-  it('should handle invalid dates with a known timezone', function() {
-    const tz = 'America/Chicago';
-    const options = { timezone: tz };
-    const value = {string: () => { return '2016-02-31T03:04:05'; }};
-    TIMESTAMP.parse(value, options).should.equal('invalid date');
-  });
-
   it('should stringify Date objects', function() {
     const value = new Date();
     const options = { timezone: '+00:00' };

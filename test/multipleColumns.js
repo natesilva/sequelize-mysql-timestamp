@@ -55,9 +55,9 @@ describe('multiple TIMESTAMP columns on a table', function () {
     yield Model.create({username: 'janedoe', hire_date: expected1, last_review: expected2});
     const jane = yield Model.findOne({where: {username: 'janedoe'}});
     moment(jane.hire_date).utc().format('YYYY-MM-DD HH:mm:ss Z')
-      .should.equal(expected1.format('YYYY-MM-DD HH:mm:ss Z'));
+      .should.equal(expected1.utc().format('YYYY-MM-DD HH:mm:ss Z'));
     moment(jane.last_review).utc().format('YYYY-MM-DD HH:mm:ss Z')
-      .should.equal(expected2.format('YYYY-MM-DD HH:mm:ss Z'));
+      .should.equal(expected2.utc().format('YYYY-MM-DD HH:mm:ss Z'));
   }));
 
   it('should return consistent timezone-specific date text', co.wrap(function* () {

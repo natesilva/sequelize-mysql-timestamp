@@ -1,7 +1,7 @@
 {
   "name": "sequelize-mysql-timestamp",
   "description": "support MySQL TIMESTAMP columns in Sequelize.js",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "author": "Nate Silva <nate@natesilva.com>",
   "main": "index.js",
   "types": "./index.d.ts",

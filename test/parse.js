@@ -47,4 +47,42 @@ describe('TIMESTAMP parsing', function() {
     dvalue.toISOString().should.equal('2016-12-16T01:09:09.000Z');
     ts.stringify(ivalue, options).should.equal(ts.stringify(dvalue, options));
   });
+
+  it('should reject dates that are out-of-range for MySQL TIMESTAMPs', function() {
+    const tz = 'America/Chicago';
+    const options = { timezone: tz };
+
+    // documented range is 1970-01-01 00:00:01 through 2038-01-19 03:14:07 (UTC)
+    const values = [
+      new Date('1970-01-01T00:00:00Z'),   // 1 second before the beginning of the range
+      new Date('2038-01-19 03:14:08Z'),   // 1 second after the end of the range
+      new Date(100000000*86400000),       // absolute max JavaScript Date value
+      new Date(-100000000*86400000),      // absolute min JavaScript Date value
+      '1970-01-01T00:00:00Z',             // too-early date expressed as a string
+      '2038-01-19 03:14:08Z'              // too-late date expressed as a string
+    ];
+
+    values.forEach(function(d) {
+      const v = { string: () => d };
+      TIMESTAMP.parse(v, options).should.equal('invalid date');
+    });
+  });
+
+  it('should accept extreme in-range dates', function() {
+    const tz = 'America/Chicago';
+    const options = { timezone: tz };
+
+    // documented range is 1970-01-01 00:00:01 through 2038-01-19 03:14:07 (UTC)
+    const values = [
+      new Date('1970-01-01T00:00:01Z'),   // min valid date
+      new Date('2038-01-19 03:14:07Z'),   // max valid date
+      '1970-01-01T00:00:01Z',             // min date expressed as a string
+      '2038-01-19 03:14:07Z'              // max date expressed as a string
+    ];
+
+    values.forEach(function(d) {
+      const v = { string: () => d };
+      TIMESTAMP.parse(v, options).getTime().should.equal((new Date(d).getTime()));
+    });
+  });
 });

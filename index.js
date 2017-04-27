@@ -9,8 +9,13 @@ const util = require('util');
 const _ = require('lodash');
 const BaseTypes = require('sequelize/lib/data-types');
 const sequelizeErrors = require('sequelize/lib/errors');
-const moment = require('moment-timezone');
-const Validator = require('validator');
+const tz = require('timezone/loaded');
+
+const timezoneOffsetRx = /^(\+|\-)(\d{2})(?::)?(\d{2})$/;
+
+// documented min and max values for MySQL’s TIMESTAMP data type
+const MIN_DATE = tz('1970-01-01 00:00:01');
+const MAX_DATE = tz('2038-01-19 03:14:07');
 
 /**
  * like util.inherits, but also copies over static properties
@@ -18,15 +23,27 @@ const Validator = require('validator');
  */
 function inherits(constructor, superConstructor) {
   util.inherits(constructor, superConstructor); // Instance (prototype) methods
-  _.extend(constructor, superConstructor); // Static methods
+  _.assignIn(constructor, superConstructor); // Static methods
 }
 
-// internal date validation function
+/**
+ * Internal date validation. The value may be an integer (representing an epoch
+ * timestamp), an object whose numeric representation is an epoch timestamp (such as a
+ * JavaScript Date or a Moment.js object), or a string that can be parsed by the Date()
+ * constructor.
+ * @param {*} value
+ */
 function _validate(value) {
-  if (!Validator.toDate(String(value))) { return false; }
-  if (value instanceof Date) { return moment(value).isValid(); }
-  if (moment.isMoment(value)) { return moment(value).isValid(); }
-  if (!moment(String(value)).isValid()) { return false; }
+  if (!isNaN(Number(value))) {
+    // value or Date/Moment that is convertible to number representing an epoch offset
+    if (Number(value) < MIN_DATE || Number(value) > MAX_DATE) { return false; }
+    return true;
+  }
+
+  // parse it as a string
+  const d = new Date(String(value));
+  if (isNaN(d.getTime())) { return false; }
+  if (d.getTime() < MIN_DATE || d.getTime() > MAX_DATE) { return false; }
   return true;
 }
 
@@ -55,40 +72,27 @@ TIMESTAMP.prototype.validate = function validate(value) {
 };
 
 TIMESTAMP.prototype.$stringify = TIMESTAMP.prototype._stringify = function(date, options) {
-    if (!moment.isMoment(date)) {
-      if (date instanceof Date) {
-        return this._stringify(moment(date), options);
-      }
-      if (Number.isInteger(date)) {
-        return this._stringify(moment(new Date(date)), options);
-      }
-      if (_validate(date)) {
-        return this._stringify(moment(date), options);
-      }
-    }
+    if (!_validate(date)) { return 'invalid date'; }
 
-    if (!moment.isMoment(date) || !date.isValid()) { return 'invalid date'; }
-
-    if (moment.tz.zone(options.timezone)) {
+    // special handling for UTC offset timezones ("+08:00" and similar)
+    const utcOffset = timezoneOffsetRx.exec(options.timezone);
+    if (utcOffset) {
+      const sign = utcOffset[1];
+      const hours = parseInt(utcOffset[2], 10);
+      const minutes = parseInt(utcOffset[3], 10);
       if (this._length) {
-        const result = date.tz(options.timezone).format('YYYY-MM-DD HH:mm:ss.SSS');
-        return result;
+        return tz(date, `${sign}${hours} hours`, `${sign}${minutes} minutes`,
+          '%Y-%m-%d %H:%M:%S.%3N');
       } else {
-        const result = date.tz(options.timezone).format('YYYY-MM-DD HH:mm:ss');
-        return result;
+        return tz(date, `${sign}${hours} hours`, `${sign}${minutes} minutes`,
+          '%Y-%m-%d %H:%M:%S');
       }
     }
-
-    // options timezone is not a known moment timezone; treat it as a UTC offset
-    date.utc();
-    date.utcOffset(options.timezone);
 
     if (this._length) {
-      const result = date.format('YYYY-MM-DD HH:mm:ss.SSS');
-      return result;
+      return tz(date, options.timezone, '%Y-%m-%d %H:%M:%S.%3N');
     } else {
-      const result = date.format('YYYY-MM-DD HH:mm:ss');
-      return result;
+      return tz(date, options.timezone, '%Y-%m-%d %H:%M:%S');
     }
 };
 
@@ -97,17 +101,18 @@ TIMESTAMP.prototype.parse = TIMESTAMP.parse = function(value, options) {
   if (strValue === null) { return strValue; }
   if (!_validate(strValue)) { return 'invalid date'; }
 
-  let result;
-  if (moment.tz.zone(options.timezone)) {
-    // moment knows about the TZ
-    result = moment.tz(strValue, options.timezone).toDate();
-  } else {
-    // options timezone is not known by moment; treat it as a UTC offset
-    const dateStr = `${strValue}${options.timezone}`;
-    result = new Date(dateStr);
+  // special handling for UTC offset timezones ("+08:00" and similar)
+  const utcOffset = timezoneOffsetRx.exec(options.timezone);
+  if (utcOffset) {
+    let sign = utcOffset[1];
+    // flip the sign: strValue is in the offset timezone and we want to get back to UTC
+    sign = (sign === '+') ? '-' : '+';
+    const hours = parseInt(utcOffset[2], 10);
+    const minutes = parseInt(utcOffset[3], 10);
+    return new Date(tz(strValue, `${sign}${hours} hours`, `${sign}${minutes} minutes`));
   }
 
-  return result;
+  return new Date(tz(strValue, options.timezone));
 };
 
 TIMESTAMP.types = {mysql: ['TIMESTAMP']};

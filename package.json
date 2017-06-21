@@ -19,7 +19,7 @@
   "devDependencies": {
     "co": "^4.6.0",
     "mocha": "^3.2.0",
-    "moment-timezone": "^0.5.13",
+    "moment": "^2.18.1",
     "mysql": "^2.13.0",
     "nyc": "^10.2.0",
     "sequelize": "^3.30.4",

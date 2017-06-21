@@ -9,7 +9,8 @@ if (fs.existsSync(`${__dirname}/config.local.json`)) {
 }
 const Sequelize = require('sequelize');
 const uuidV4 = require('uuid/v4');
-const moment = require('moment-timezone');
+const moment = require('moment');
+const tz = require('timezone/loaded');
 const co = require('co');
 const should = require('should');                     // eslint-disable-line
 
@@ -25,7 +26,7 @@ describe('TIMESTAMP column with Sequelize timezone as +00:00 and UTC dates', fun
     timestamps: false
   });
 
-  const expected = moment('2016-01-02T03:04:05Z');
+  const expected = tz('2016-01-02T03:04:05Z');
 
   beforeEach(function() {
     return Model.sync({force: true});
@@ -38,28 +39,7 @@ describe('TIMESTAMP column with Sequelize timezone as +00:00 and UTC dates', fun
   it('should store and retrieve a date', co.wrap(function* () {
     yield Model.create({username: 'janedoe', hire_date: expected});
     const jane = yield Model.findOne({where: {username: 'janedoe'}});
-    jane.hire_date.getTime().should.equal(expected.valueOf());
-  }));
-
-  it('should store and retrieve a date with UTC offset', co.wrap(function* () {
-    yield Model.create({username: 'janedoe', hire_date: expected});
-    const jane = yield Model.findOne({where: {username: 'janedoe'}});
-    jane.hire_date.getTime().should.equal(expected.valueOf());
-    jane.hire_date.getTime().should.equal(expected.utc().valueOf());
-  }));
-
-  it('should return consistent UTC date text', co.wrap(function* () {
-    yield Model.create({username: 'janedoe', hire_date: expected});
-    const jane = yield Model.findOne({where: {username: 'janedoe'}});
-    moment(jane.hire_date).utc().format('YYYY-MM-DD HH:mm:ss Z')
-      .should.equal(expected.format('YYYY-MM-DD HH:mm:ss Z'));
-  }));
-
-  it('should return consistent timezone-specific date text', co.wrap(function* () {
-    yield Model.create({username: 'janedoe', hire_date: expected});
-    const jane = yield Model.findOne({where: {username: 'janedoe'}});
-    moment(jane.hire_date).tz('Asia/Tokyo').format('YYYY-MM-DD HH:mm:ss Z')
-      .should.equal(expected.tz('Asia/Tokyo').format('YYYY-MM-DD HH:mm:ss Z'));
+    jane.hire_date.getTime().should.equal(expected);
   }));
 });
 
@@ -75,7 +55,7 @@ describe('TIMESTAMP column with Sequelize timezone as +00:00 and non-UTC TZ', fu
     timestamps: false
   });
 
-  const expected = moment('2016-01-02T03:04:05+05:45'); // Asia/Kathmandu
+  const expected = tz('2016-01-02T03:04:05+05:45'); // Asia/Kathmandu
 
   beforeEach(function() {
     return Model.sync({force: true});
@@ -88,28 +68,7 @@ describe('TIMESTAMP column with Sequelize timezone as +00:00 and non-UTC TZ', fu
   it('should store and retrieve a date', co.wrap(function* () {
     yield Model.create({username: 'janedoe', hire_date: expected});
     const jane = yield Model.findOne({where: {username: 'janedoe'}});
-    jane.hire_date.getTime().should.equal(expected.valueOf());
-  }));
-
-  it('should store and retrieve a date with UTC offset', co.wrap(function* () {
-    yield Model.create({username: 'janedoe', hire_date: expected});
-    const jane = yield Model.findOne({where: {username: 'janedoe'}});
-    jane.hire_date.getTime().should.equal(expected.valueOf());
-    jane.hire_date.getTime().should.equal(expected.utc().valueOf());
-  }));
-
-  it('should return consistent UTC date text', co.wrap(function* () {
-    yield Model.create({username: 'janedoe', hire_date: expected});
-    const jane = yield Model.findOne({where: {username: 'janedoe'}});
-    moment(jane.hire_date).utc().format('YYYY-MM-DD HH:mm:ss Z')
-      .should.equal(expected.format('YYYY-MM-DD HH:mm:ss Z'));
-  }));
-
-  it('should return consistent timezone-specific date text', co.wrap(function* () {
-    yield Model.create({username: 'janedoe', hire_date: expected});
-    const jane = yield Model.findOne({where: {username: 'janedoe'}});
-    moment(jane.hire_date).tz('Asia/Tokyo').format('YYYY-MM-DD HH:mm:ss Z')
-      .should.equal(expected.tz('Asia/Tokyo').format('YYYY-MM-DD HH:mm:ss Z'));
+    jane.hire_date.getTime().should.equal(expected);
   }));
 });
 
@@ -128,7 +87,7 @@ describe('TIMESTAMP column with Sequelize timezone as +08:00 and non-UTC TZ', fu
     timestamps: false
   });
 
-  const expected = moment('2016-01-02T03:04:05+08:00');
+  const expected = tz('2016-01-02T03:04:05+08:00');
 
   beforeEach(function() {
     return Model.sync({force: true});
@@ -141,28 +100,7 @@ describe('TIMESTAMP column with Sequelize timezone as +08:00 and non-UTC TZ', fu
   it('should store and retrieve a date', co.wrap(function* () {
     yield Model.create({username: 'janedoe', hire_date: expected});
     const jane = yield Model.findOne({where: {username: 'janedoe'}});
-    jane.hire_date.getTime().should.equal(expected.valueOf());
-  }));
-
-  it('should store and retrieve a date with UTC offset', co.wrap(function* () {
-    yield Model.create({username: 'janedoe', hire_date: expected});
-    const jane = yield Model.findOne({where: {username: 'janedoe'}});
-    jane.hire_date.getTime().should.equal(expected.valueOf());
-    jane.hire_date.getTime().should.equal(expected.utc().valueOf());
-  }));
-
-  it('should return consistent UTC date text', co.wrap(function* () {
-    yield Model.create({username: 'janedoe', hire_date: expected});
-    const jane = yield Model.findOne({where: {username: 'janedoe'}});
-    moment(jane.hire_date).utc().format('YYYY-MM-DD HH:mm:ss Z')
-      .should.equal(expected.utc().format('YYYY-MM-DD HH:mm:ss Z'));
-  }));
-
-  it('should return consistent timezone-specific date text', co.wrap(function* () {
-    yield Model.create({username: 'janedoe', hire_date: expected});
-    const jane = yield Model.findOne({where: {username: 'janedoe'}});
-    moment(jane.hire_date).tz('Asia/Tokyo').format('YYYY-MM-DD HH:mm:ss Z')
-      .should.equal(expected.tz('Asia/Tokyo').format('YYYY-MM-DD HH:mm:ss Z'));
+    jane.hire_date.getTime().should.equal(expected);
   }));
 });
 
@@ -181,7 +119,7 @@ describe('TIMESTAMP column with Sequelize timezone as -08:00 and non-UTC TZ', fu
     timestamps: false
   });
 
-  const expected = moment('2016-01-02T03:04:05-08:00');
+  const expected = tz('2016-01-02T03:04:05-08:00');
 
   beforeEach(function() {
     return Model.sync({force: true});
@@ -195,27 +133,6 @@ describe('TIMESTAMP column with Sequelize timezone as -08:00 and non-UTC TZ', fu
     yield Model.create({username: 'janedoe', hire_date: expected});
     const jane = yield Model.findOne({where: {username: 'janedoe'}});
     jane.hire_date.getTime().should.equal(expected.valueOf());
-  }));
-
-  it('should store and retrieve a date with UTC offset', co.wrap(function* () {
-    yield Model.create({username: 'janedoe', hire_date: expected});
-    const jane = yield Model.findOne({where: {username: 'janedoe'}});
-    jane.hire_date.getTime().should.equal(expected.valueOf());
-    jane.hire_date.getTime().should.equal(expected.utc().valueOf());
-  }));
-
-  it('should return consistent UTC date text', co.wrap(function* () {
-    yield Model.create({username: 'janedoe', hire_date: expected});
-    const jane = yield Model.findOne({where: {username: 'janedoe'}});
-    moment(jane.hire_date).utc().format('YYYY-MM-DD HH:mm:ss Z')
-      .should.equal(expected.utc().format('YYYY-MM-DD HH:mm:ss Z'));
-  }));
-
-  it('should return consistent timezone-specific date text', co.wrap(function* () {
-    yield Model.create({username: 'janedoe', hire_date: expected});
-    const jane = yield Model.findOne({where: {username: 'janedoe'}});
-    moment(jane.hire_date).tz('Asia/Tokyo').format('YYYY-MM-DD HH:mm:ss Z')
-      .should.equal(expected.tz('Asia/Tokyo').format('YYYY-MM-DD HH:mm:ss Z'));
   }));
 });
 
@@ -241,7 +158,7 @@ describe('TIMESTAMP column with Sequelize typeValidation set to true', function(
     return Model.drop();
   });
 
-  it('should accept a valid date', function() {
+  it('should accept a valid date string (may warn)', function() {
     return Model.create({username: 'janedoe', hire_date: '2016-01-02T03:04:05Z'})
       .should.be.fulfilled();
   });
@@ -276,7 +193,8 @@ describe('TIMESTAMP column with Sequelize named timezone', function () {
     timestamps: false
   });
 
-  const expected = moment('2016-01-02T03:04:05').tz('Australia/Perth');
+  // a date from this PC’s local timezone
+  const expected = tz(new Date('2016-01-02T03:04:05'));
 
   beforeEach(function() {
     return Model.sync({force: true});
@@ -289,27 +207,6 @@ describe('TIMESTAMP column with Sequelize named timezone', function () {
   it('should store and retrieve a date', co.wrap(function* () {
     yield Model.create({username: 'janedoe', hire_date: expected});
     const jane = yield Model.findOne({where: {username: 'janedoe'}});
-    jane.hire_date.getTime().should.equal(expected.valueOf());
-  }));
-
-  it('should store and retrieve a date with UTC offset', co.wrap(function* () {
-    yield Model.create({username: 'janedoe', hire_date: expected});
-    const jane = yield Model.findOne({where: {username: 'janedoe'}});
-    jane.hire_date.getTime().should.equal(expected.valueOf());
-    jane.hire_date.getTime().should.equal(expected.utc().valueOf());
-  }));
-
-  it('should return consistent UTC date text', co.wrap(function* () {
-    yield Model.create({username: 'janedoe', hire_date: expected});
-    const jane = yield Model.findOne({where: {username: 'janedoe'}});
-    moment(jane.hire_date).utc().format('YYYY-MM-DD HH:mm:ss Z')
-      .should.equal(expected.utc().format('YYYY-MM-DD HH:mm:ss Z'));
-  }));
-
-  it('should return consistent timezone-specific date text', co.wrap(function* () {
-    yield Model.create({username: 'janedoe', hire_date: expected});
-    const jane = yield Model.findOne({where: {username: 'janedoe'}});
-    moment(jane.hire_date).tz('Asia/Tokyo').format('YYYY-MM-DD HH:mm:ss Z')
-      .should.equal(expected.tz('Asia/Tokyo').format('YYYY-MM-DD HH:mm:ss Z'));
+    jane.hire_date.getTime().should.equal(expected);
   }));
 });

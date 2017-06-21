@@ -17,6 +17,8 @@ const timezoneOffsetRx = /^(\+|\-)(\d{2})(?::)?(\d{2})$/;
 const MIN_DATE = tz('1970-01-01 00:00:01');
 const MAX_DATE = tz('2038-01-19 03:14:07');
 
+let timestampOptions = { warnings: true };
+
 /**
  * like util.inherits, but also copies over static properties
  * @private
@@ -74,6 +76,13 @@ TIMESTAMP.prototype.validate = function validate(value) {
 TIMESTAMP.prototype.$stringify = TIMESTAMP.prototype._stringify = function(date, options) {
     if (!_validate(date)) { return 'invalid date'; }
 
+    if (timestampOptions.warnings && typeof date === 'string') {
+      const message = 'A TIMESTAMP column was set to a string value. While this may ' +
+        'work, it’s strongly recommended that you pass a Date or Moment object or an ' +
+        'epoch (integer) value.';
+      console.warn(message);
+    }
+
     // special handling for UTC offset timezones ("+08:00" and similar)
     const utcOffset = timezoneOffsetRx.exec(options.timezone);
     if (utcOffset) {
@@ -81,18 +90,18 @@ TIMESTAMP.prototype.$stringify = TIMESTAMP.prototype._stringify = function(date,
       const hours = parseInt(utcOffset[2], 10);
       const minutes = parseInt(utcOffset[3], 10);
       if (this._length) {
-        return tz(date, `${sign}${hours} hours`, `${sign}${minutes} minutes`,
+        return tz(new Date(date), `${sign}${hours} hours`, `${sign}${minutes} minutes`,
           '%Y-%m-%d %H:%M:%S.%3N');
       } else {
-        return tz(date, `${sign}${hours} hours`, `${sign}${minutes} minutes`,
+        return tz(new Date(date), `${sign}${hours} hours`, `${sign}${minutes} minutes`,
           '%Y-%m-%d %H:%M:%S');
       }
     }
 
     if (this._length) {
-      return tz(date, options.timezone, '%Y-%m-%d %H:%M:%S.%3N');
+      return tz(new Date(date), options.timezone, '%Y-%m-%d %H:%M:%S.%3N');
     } else {
-      return tz(date, options.timezone, '%Y-%m-%d %H:%M:%S');
+      return tz(new Date(date), options.timezone, '%Y-%m-%d %H:%M:%S');
     }
 };
 
@@ -117,7 +126,11 @@ TIMESTAMP.prototype.parse = TIMESTAMP.parse = function(value, options) {
 
 TIMESTAMP.types = {mysql: ['TIMESTAMP']};
 
-function init(sequelize) {
+function init(sequelize, opts) {
+  if (opts && (opts.warnings !== undefined)) {
+    timestampOptions.warnings = opts.warnings;
+  }
+
   if (sequelize) {
     /* istanbul ignore if: only called for Sequelize v4 */
     /* istanbul ignore else: only called for Sequelize v3 */

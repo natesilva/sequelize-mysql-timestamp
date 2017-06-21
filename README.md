@@ -34,6 +34,26 @@ const User = sequelize.define('User', {
 });
 ```
 
+## Use a Date or an epoch integer
+
+When setting a date value, it’s recommended that you pass a `Date` object, or a plain integer (an epoch timestamp—what you get when you call `Date.now()`). You can also pass any object whose numeric value resolves to an epoch timestamp, including Moment.js objects.
+
+Although you can pass a string, this is not recommended, as string values don’t inherently have timezone information. Without a timezone your string may be interpreted as a local date, unless it’s a date-only ISO 8601 string (see the [note regarding `dateString` on MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date)). Some date strings do have timezone information but even then, to avoid inconsistent parsing, it’s strongly recommended that you pass a timezone-aware value, either a `Date()`, or an epoch timestamp (which is by definition UTC), or a Moment.js object.
+
+If you pass a string value, a warning will be printed to the console. To suppress this warning, pass `{ warnings: false }` to the constructor:
+
+```
+const TIMESTAMP = require('sequelize-mysql-timestamp')(sequelize, { warnings: false });
+```
+
+## The `$between` keyword in Sequelize
+
+When using the Sequelize `$between` keyword, Sequelize will **not** properly pass the value through this data type. Instead, it’s best to pass string values. The strings should represent the desired times in UTC:
+
+```
+  SomeModel.findAll({ where: { hire_date: { $between: [ '2016-01-01 00:00:00', '2016-01-31 23:59:59' ] }}})…
+```
+
 ## Differences between `TIMESTAMP` and `DATETIME`
 
 The MySQL `TIMESTAMP` data type stores a [Unix epoch timestamp](https://en.wikipedia.org/wiki/Unix_time). This represents an _absolute_ instant in time, regardless of timezones, which is great for data consistency. On the other hand, a `TIMESTAMP` can only represent values between January 1970 and January 2038, which is a serious limitation for some apps.

@@ -4,24 +4,23 @@
 
 const TIMESTAMP = require('../index.js')();
 const should = require('should');                     // eslint-disable-line
-const moment = require('moment-timezone');
+const tz = require('timezone/loaded');
 
 describe('TIMESTAMP parsing', function() {
   it('should parse valid dates with a UTC offset timezone', function() {
     const d = new Date('2016-01-02T03:04:05Z');
 
     const options = { timezone: '+00:00' };
-    const value = {string: () => { return moment(d).utc().format('YYYY-MM-DDTHH:mm:ss'); }};
-
+    const value = { string: () => '2016-01-02T03:04:05Z' };
     TIMESTAMP.parse(value, options).getTime().should.equal(d.valueOf());
   });
 
   it('should parse valid dates with a known timezone', function() {
     const d = new Date('2016-01-02T03:04:05Z');
 
-    const tz = 'America/Chicago';
-    const options = { timezone: tz };
-    const value = {string: () => { return moment(d).tz(tz).format('YYYY-MM-DDTHH:mm:ss'); }};
+    const tzName = 'America/Chicago';
+    const options = { timezone: tzName };
+    const value = { string: () => { return tz(d, tzName, '%Y-%m-%dT%H:%M:%S'); }};
 
     TIMESTAMP.parse(value, options).getTime().should.equal(d.valueOf());
   });
@@ -30,7 +29,7 @@ describe('TIMESTAMP parsing', function() {
     const value = new Date();
     const options = { timezone: '+00:00' };
     const ts = new TIMESTAMP;
-    const expected = moment(value).utc().format('YYYY-MM-DD HH:mm:ss');
+    const expected = tz(value, '%Y-%m-%d %H:%M:%S');
     ts.stringify(value, options).should.equal(expected);
   });
 
@@ -46,6 +45,14 @@ describe('TIMESTAMP parsing', function() {
     dvalue = new Date(ivalue);
     dvalue.toISOString().should.equal('2016-12-16T01:09:09.000Z');
     ts.stringify(ivalue, options).should.equal(ts.stringify(dvalue, options));
+  });
+
+  it('should handle string dates but warn', function() {
+    const value = new Date();
+    const options = { timezone: '+00:00' };
+    const ts = new TIMESTAMP;
+    const expected = tz(value, '%Y-%m-%d %H:%M:%S');
+    ts.stringify(tz(value, '%Y-%m-%d %H:%M:%SZ'), options).should.equal(expected);
   });
 
   it('should reject dates that are out-of-range for MySQL TIMESTAMPs', function() {

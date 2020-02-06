@@ -1,0 +1,25 @@
+{
+  "folders": [
+    {
+      "path": ".",
+      "folder_exclude_patterns": [
+        "node_modules",
+        ".vscode",
+        "build",
+        "coverage",
+        ".nyc_output"
+      ]
+    }
+  ],
+  "settings": {
+    "SublimeLinter.linters.tslint.disable": true,
+    "SublimeLinter.linters.eslint.selector": "source.ts",
+    "js_prettier": {
+      "auto_format_on_save": true
+    },
+    "rulers": [90],
+    "wrap_width": 91,
+    "show_definitions": false,
+    "show_panel_on_save": "view"
+  }
+}

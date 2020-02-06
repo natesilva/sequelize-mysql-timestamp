@@ -1,9 +1,10 @@
+---
 language: node_js
 node_js:
-  - "node"
-  - "6"
-  - "5"
-  - "4.0.0"
+  - 'node'
+  - '8.0.0'
+  - '10'
+  - '12'
 
 dist: trusty
 sudo: false

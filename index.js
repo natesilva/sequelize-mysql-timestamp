@@ -124,7 +124,7 @@ TIMESTAMP.prototype.parse = TIMESTAMP.parse = function(value, options) {
   return new Date(tz(strValue, options.timezone));
 };
 
-TIMESTAMP.types = {mysql: ['TIMESTAMP']};
+TIMESTAMP.types = {mysql: ['TIMESTAMP'], mariadb: ['TIMESTAMP']};
 
 function init(sequelize, opts) {
   if (opts && (opts.warnings !== undefined)) {

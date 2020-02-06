@@ -10,6 +10,6 @@ module.exports = {
     username: 'testuser',
     password: '',
     database: 'myapp_test',
-    // operatorsAliases: false,  // include this when testing against Sequelize v4
+    // operatorsAliases: false,  // can include this when testing against Sequelize v4
   },
 };

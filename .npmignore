@@ -11,3 +11,5 @@ test
 .travis.yml
 README.md
 
+.prettierrc.json
+*.sublime-*

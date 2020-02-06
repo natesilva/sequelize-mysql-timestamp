@@ -2,8 +2,7 @@
 
 [![NPM](https://nodei.co/npm/sequelize-mysql-timestamp.png)](https://nodei.co/npm/sequelize-mysql-timestamp/)
 
-[![Build Status](https://travis-ci.org/natesilva/sequelize-mysql-timestamp.svg?branch=master)](https://travis-ci.org/natesilva/sequelize-mysql-timestamp
-)
+[![Build Status](https://travis-ci.org/natesilva/sequelize-mysql-timestamp.svg?branch=master)](https://travis-ci.org/natesilva/sequelize-mysql-timestamp)
 
 This adds support to Sequelize for MySQL’s `TIMESTAMP` data type. Specifically, it allows you to use `TIMESTAMP` for basic storage of an absolute date/time.
 
@@ -68,8 +67,8 @@ The SQL standard defines a data type, `TIMESTAMP WITH TIME ZONE`, that supports 
 
 ## Tests
 
-To run the unit tests, copy `test/config.json` to `test/config.local.json` and enter credentials for a test database. Then run `npm test`.
+To run the unit tests, copy `test/config.js` to `test/config.local.js` and enter credentials for a test database. Then run `npm test`.
 
 During the tests, several tables are created. These have names starting with `_test_timestamp_` followed by a UUID, so they will not conflict with existing tables. These tables are `DROP`ped after the tests.
 
-The tests use Sequelize 3.x. To test against Sequelize 4.x, you can do `npm uninstall --save-dev sequelize && npm install --save-dev sequelize@unstable mysql2` before running the test. To switch back to Sequelize 3.x, do `npm uninstall --save-dev sequelize && npm install --save-dev sequelize`.
+The tests use Sequelize 5.x, the latest supported version. To test against other versions, do `npm rm sequelize && npm i -D sequelize@4` before running the test. Replace `@4` with the version you want to test against. Tests should work back to Sequelize v3.

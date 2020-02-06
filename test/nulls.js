@@ -3,43 +3,47 @@
 'use strict';
 
 const fs = require('fs');
-const config = require('./config.json');
-if (fs.existsSync(`${__dirname}/config.local.json`)) {
-  Object.assign(config, require('./config.local.json'));
+const config = require('./config.js');
+if (fs.existsSync(`${__dirname}/config.local.js`)) {
+  Object.assign(config, require('./config.local.js'));
 }
 const Sequelize = require('sequelize');
 const uuidV4 = require('uuid/v4');
-const co = require('co');
-const should = require('should');                     // eslint-disable-line
+const assert = require('assert');
 
-describe('NULL TIMESTAMPs', function () {
-  let testConfig = {};
-  Object.assign(testConfig, config.db, { timezone: 'Australia/Perth' });
-  const sequelize = new Sequelize(testConfig);
-  const TIMESTAMP = require('../index.js')(sequelize);
+describe('NULL TIMESTAMPs', () => {
+  let sequelize;
+  let TIMESTAMP;
   let Model;
 
-  before(co.wrap(function* () {
-    Model = sequelize.define('Model', {
-      username: Sequelize.STRING,
-      hire_date: new TIMESTAMP(3)           // store (3) decimal places
-    }, {
-      tableName: `_test_timestamp_${uuidV4()}`,           // unique table name
-      timestamps: false
-    });
-  }));
+  beforeEach(async () => {
+    let testConfig = Object.assign({}, config.db, { timezone: '-08:00' });
+    sequelize = new Sequelize(testConfig);
+    TIMESTAMP = require('../index.js')(sequelize);
 
-  beforeEach(function() {
-    return Model.sync({force: true});
+    Model = sequelize.define(
+      'Model',
+      {
+        username: Sequelize.STRING,
+        hire_date: new TIMESTAMP(3), // store (3) decimal places
+      },
+      {
+        tableName: `_test_timestamp_${uuidV4()}`, // unique table name
+        timestamps: false,
+      }
+    );
+
+    await Model.sync({ force: true });
   });
 
-  afterEach(function() {
-    return Model.drop();
+  afterEach(async () => {
+    await Model.drop();
+    await sequelize.close();
   });
 
-  it('should handle NULL timestamps', co.wrap(function* () {
-    yield Model.create({username: 'janedoe', hire_date: null});
-    const jane = yield Model.findOne({where: {username: 'janedoe'}});
-    should.not.exist(jane.hire_date);
-  }));
+  it('should handle NULL timestamps', async () => {
+    await Model.create({ username: 'janedoe', hire_date: null });
+    const jane = await Model.findOne({ where: { username: 'janedoe' } });
+    assert.strictEqual(jane.hire_date, null);
+  });
 });

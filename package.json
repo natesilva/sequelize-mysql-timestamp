@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "@mocha/contributors": "^1.0.4",
-    "mocha": "^7.0.1",
+    "mocha": "^10.2.0",
     "moment": "^2.24.0",
     "mysql": "^2.18.1",
     "mysql2": "^2.1.0",
